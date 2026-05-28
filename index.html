@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hax Empregos</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        // Aplica tema salvo ANTES do paint para evitar flash
+        (function() {
+            try {
+                if (localStorage.getItem('hax-theme') === 'light') {
+                    document.documentElement.classList.add('light-mode');
+                }
+            } catch (e) {}
+        })();
+
+        window.addEventListener('error', function(e) {
+            alert("Erro de Javascript:\n" + e.message + "\n\nArquivo: " + e.filename + "\nLinha: " + e.lineno);
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            alert("Erro de Promessa Rejeitada:\n" + e.reason);
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+
+    <div class="nav-actions-container">
+        <a href="javascript:void(0)" onclick="window.goBack()" id="back-btn" class="back-btn hidden">&larr; VOLTAR</a>
+    </div>
+
+    <a href="#home" id="home-btn" class="home-btn-fixed" title="Voltar para a Tela Inicial" aria-label="Voltar para a Tela Inicial"><i class="fas fa-home"></i></a>
+
+    <button id="theme-toggle" class="theme-toggle-btn" type="button" title="Alternar tema claro/escuro" aria-label="Alternar tema claro/escuro">
+        <i class="fas fa-sun" id="theme-toggle-icon"></i>
+    </button>
+
+    <header class="main-header" id="main-header">
+        <div class="logo-container">
+            <a href="#home"><h1 class="logo">HAX <span class="wine-text">EMPREGOS</span></h1></a>
+        </div>
+        <button class="hamburger" id="hamburger-btn" aria-label="Abrir menu">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="navbar" id="navbar">
+            <a href="#about" class="nav-link">Sobre</a>
+            <a href="#guide" class="nav-link">Como Usar</a>
+            <a href="#select-companies" class="nav-link">Empresas</a>
+            <a href="#select-employees" class="nav-link">Talentos</a>
+            <a href="#resume" class="nav-link">Gerar CV</a>
+            <a href="#chat" class="nav-link">
+                Chat <i class="fas fa-comment-dots"></i>
+            </a>
+            <a href="#support" class="nav-link">Suporte</a>
+            <div id="user-area">
+                <a href="#auth" class="login-btn-link"><button class="login-btn">LOGIN</button></a>
+            </div>
+        </nav>
+    </header>
+
+    <div id="home-screen">
+        <div class="container-full">
+            <div class="split left">
+                <div class="content">
+                    <h2>Empresas</h2>
+                    <p>Encontre os melhores talentos.</p>
+                    <a href="#employer-form" class="btn" id="btn-contratar">Quero Contratar</a>
+                </div>
+            </div>
+            <div class="split right">
+                <div class="content">
+                    <h2>Candidatos</h2>
+                    <p>Encontre sua oportunidade.</p>
+                    <a href="#candidate-form" class="btn" id="btn-trabalhar">Quero ser Contratado</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULO DE LOGIN E ASSINATURA -->
+    <section id="auth-page" class="page-content hidden">
+        <div class="form-card auth-card">
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login">Entrar</button>
+                <button class="auth-tab" id="tab-register">Criar Conta</button>
+            </div>
+
+            <form id="form-login">
+                <h3>Bem-vindo de volta</h3>
+                <div class="input-group">
+                    <label>E-mail</label>
+                    <input type="email" id="login-email" required placeholder="seu@email.com">
+                </div>
+                <div class="input-group">
+                    <label>Senha</label>
+                    <div class="password-wrapper" style="position: relative;">
+                        <input type="password" id="login-password" required placeholder="******" style="padding-right: 45px;">
+                        <i class="fas fa-eye toggle-password" onclick="window.togglePasswordVisibility('login-password', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--gray-medium); font-size: 1.1rem; z-index: 10;"></i>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">ENTRAR</button>
+            </form>
+
+            <form id="form-register" class="hidden">
+                <h3>Junte-se a HAX</h3>
+                <div class="input-group">
+                    <label>Seu E-mail</label>
+                    <input type="email" id="reg-email" required placeholder="seu@email.com">
+                </div>
+                <div class="input-group">
+                    <label>Crie uma Senha</label>
+                    <div class="password-wrapper" style="position: relative;">
+                        <input type="password" id="reg-password" required placeholder="Mínimo 6 caracteres" style="padding-right: 45px;">
+                        <i class="fas fa-eye toggle-password" onclick="window.togglePasswordVisibility('reg-password', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--gray-medium); font-size: 1.1rem; z-index: 10;"></i>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Repita a Senha</label>
+                    <div class="password-wrapper" style="position: relative;">
+                        <input type="password" id="reg-password-confirm" required placeholder="******" style="padding-right: 45px;">
+                        <i class="fas fa-eye toggle-password" onclick="window.togglePasswordVisibility('reg-password-confirm', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--gray-medium); font-size: 1.1rem; z-index: 10;"></i>
+                    </div>
+                </div>
+                <div class="consent-group">
+                    <label class="consent-label">
+                        <input type="checkbox" id="reg-consent" required>
+                        <span>Autorizo o armazenamento dos meus dados pessoais no site HAX para uso na plataforma. <a href="#" id="consent-toggle" class="consent-toggle">Ler mais</a></span>
+                    </label>
+                    <div id="consent-more" class="consent-more hidden">
+                        Ao marcar esta opção, você concorda que a HAX armazene as informações que você fornecer no cadastro (nome, e-mail, telefone, localização, foto, currículo e demais dados do perfil) com o único propósito de permitir o funcionamento da plataforma — incluindo exibir seu perfil para empresas/candidatos, possibilitar conversas no chat e mostrar vagas compatíveis. Seus dados não serão vendidos a terceiros. Você pode solicitar a exclusão da sua conta a qualquer momento, o que removerá suas informações da nossa base. O consentimento é obrigatório para a criação da conta.
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">CRIAR CONTA</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- SEÇÃO SOBRE NÓS -->
+   <section id="about-page" class="page-content hidden">
+    <div class="about-container">
+        <h2 class="section-title">A REVOLUÇÃO <span class="wine-text">HAX</span></h2>
+        
+        <div class="about-mission">
+            <p>Nascemos da necessidade comum de ter uma vida mais fácil. A <strong>Hax Empregos</strong> não é apenas uma plataforma, é um ecossistema projetado para conectar mentes brilhantes a empresas que moldam o futuro.</p>
+            <p>Nossa missão é fazer com que a busca por emprego ou funcionários seja simples, direta e sem complicações para qualquer pessoa.</p>
+        </div>
+
+        <h3 class="team-title">OS <span class="wine-text">CRIADORES</span></h3>
+        
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="member-photo">
+                    <img src="criadores/joao.jpeg" alt="Membro João Gabriel">
+                </div>
+                <h4>João Gabriel</h4>
+                <span class="member-role">Web Designer</span>
+                <p>Responsável pela aparência do site, escolhendo as cores, as letras e deixando tudo bonito e agradável para quem usa.</p>
+            </div>
+            <div class="team-card">
+                <div class="member-photo">
+                    <img src="criadores/luiz.jpeg" alt="Membro Luiz Eduardo">
+                </div>
+                <h4>Luiz Eduardo</h4>
+                <span class="member-role">Desenvolvedor Front-End</span>
+                <p>Transforma os desenhos em um site de verdade. É ele quem monta a tela que você vê e onde você clica no celular ou computador.</p>
+            </div>
+            <div class="team-card">
+                <div class="member-photo">
+                    <img src="criadores/arthur.jpeg" alt="Membro Arthur Filipe">
+                </div>
+                <h4>Arthur Flipe</h4>
+                <span class="member-role">UX Designer</span>
+                <p>Garante que o site seja fácil de usar para qualquer pessoa, sem complicação, organizando onde cada botão e cada texto deve ficar.</p>
+            </div>
+            <div class="team-card">
+                <div class="member-photo">
+                    <img src="criadores/kaio.jpeg" alt="Membro Kaio Mathias">
+                </div>
+                <h4>Kaio Mathias</h4>
+                <span class="member-role">Desenvolvedor Back-End</span>
+                <p>Cuida de como o site funciona por trás das câmeras, guardando as informações e senhas e fazendo tudo funcionar com segurança.</p>
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <!-- SEÇÃO DE GUIA COMO USAR -->
+    <section id="guide-page" class="page-content hidden">
+        <div class="feed-container text-center">
+            <h2 class="section-title">Como <span class="wine-text">Usar</span></h2>
+            <div class="guide-grid">
+                <div class="guide-step">
+                    <div class="step-number">1</div>
+                    <h4>Crie e Edite seu Perfil Flexível</h4>
+                    <p>Faça seu cadastro instantâneo como talento individual ou empresa recrutadora. Pela nova tela "Editar Perfil", atualize foto, cargo e experiências em questão de segundos. A Hax transforma suas informações em um moderno cartão de visita disponível para a plataforma toda.</p>
+                </div>
+                <div class="guide-step">
+                    <div class="step-number">2</div>
+                    <h4>Gerencie Vagas Ilimitadas</h4>
+                    <p>As companhias cadastradas agora atuam como uma agência completa! Adicione, edite e anuncie diferentes cargos abertos. Contratou o funcionário? Feche a cortina apertando "Marcar Ocupada" e a vaga desaparece das buscas instantaneamente, podendo ser reaberta no futuro.</p>
+                </div>
+                <div class="guide-step">
+                    <div class="step-number">3</div>
+                    <h4>Use a Triagem "Para Mim" (Filtro por Área)</h4>
+                    <p>Tanto para talentos quanto para empresas, evite perder tempo com listas infinitas. Use a busca inteligente "Candidatos Para Mim" (para empresas) ou "Empresas para Mim" (para talentos) e o sistema listará apenas os pares que procuram a mesma profissão/ramo.</p>
+                </div>
+                <div class="guide-step">
+                    <div class="step-number">4</div>
+                    <h4>Inicie o Chat</h4>
+                    <p>Achou quem procurava ou encontrou a vaga que queria? Abra diretamente o perfil, analise as descrições em forma aprofundada e aperte "Enviar Mensagem" para ser imerso num chat particular dentro no painel para finalizar o negócio e tirar dúvidas.</p>
+                </div>
+                <div class="guide-step guide-step-wide">
+                    <div class="step-number">5</div>
+                    <h4>Gere o seu Currículo PDF Compactado</h4>
+                    <p>Pronto para exportar seus dados a qualquer hora? Na aba "Gerar CV" temos uma interface robusta. Preencha seus dados mais ricos, como cursos adicionais, portfólio digital ou link de LinkedIn, coloque sua foto final e baixe a Folha A4 em formato PDF leve e totalmente profissionalmente desenhada.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO DE SUPORTE -->
+    <section id="support-page" class="page-content hidden">
+        <div class="feed-container text-center">
+            <h2 class="section-title">Fale <span class="wine-text">Conosco</span></h2>
+            <p class="support-subtitle">Teve algum imprevisto, ou quer dar uma sugestão incrível para acelerar ainda mais plataforma HAX? Converse direto com aquele que colocou a mão na massa!</p>
+            
+            <div class="support-card form-card" style="margin-top: 30px;">
+                <i class="fab fa-whatsapp support-icon"></i>
+                <h3 style="margin-bottom: 20px;">Suporte Pelo WhatsApp</h3>
+                <p style="text-transform: none; letter-spacing: normal; font-size: 1rem; color: #ccc;">Clique no botão abaixo para conversar no meu WhatsApp pessoal sobre o site. Nossa prioridade é você conectado à melhor funcionalidade.</p>
+                <a href="https://wa.me/5538991260787" target="_blank" class="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i> Falar com o Criador
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- MENUS DE REDIRECIONAMENTO DE PESQUISA -->
+    <section id="select-companies-page" class="page-content hidden">
+        <div class="feed-container text-center">
+            <h2 class="section-title">Buscar <span class="wine-text">Empresas</span></h2>
+            <div class="selection-grid">
+                <a href="#companies?filter=me" class="card-item-link">
+                    <div class="card-item hover-trigger">
+                        <h4>Empresas Para Mim</h4>
+                        <p class="card-desc">Vagas compatíveis com seu perfil.</p>
+                    </div>
+                </a>
+                <a href="#companies?filter=all" class="card-item-link">
+                    <div class="card-item hover-trigger">
+                        <h4>Todas as Empresas</h4>
+                        <p class="card-desc">Lista completa de parceiros.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="select-employees-page" class="page-content hidden">
+        <div class="feed-container text-center">
+            <h2 class="section-title">Buscar <span class="wine-text">Talentos</span></h2>
+            <div class="selection-grid">
+                <a href="#employees?filter=me" class="card-item-link">
+                    <div class="card-item hover-trigger">
+                        <h4>Candidatos Para Mim</h4>
+                        <p class="card-desc">Profissionais da sua área.</p>
+                    </div>
+                </a>
+                <a href="#employees?filter=all" class="card-item-link">
+                    <div class="card-item hover-trigger">
+                        <h4>Todos os Candidatos</h4>
+                        <p class="card-desc">Banco geral de talentos.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- PÁGINA DO CHAT/MENSAGENS -->
+    <section id="chat-page" class="page-content hidden">
+        <div class="feed-container">
+            <h2 class="section-title mb-20">Minhas <span class="wine-text">Conversas</span></h2>
+            <div class="chat-wrapper">
+                <div class="chat-sidebar" id="chat-sidebar">
+                    <div class="chat-sidebar-header">Conversas Ativas</div>
+                    <div class="chat-list" id="chat-list">
+                        <!-- Carregado via JS -->
+                    </div>
+                </div>
+
+                <div class="chat-window">
+                    <div class="chat-header hidden-view" id="chat-header">
+                        <div>
+                            <span class="back-to-list" onclick="window.toggleChatList()">&#8592;</span>
+                            <span id="chat-title-name">Nome do Contato</span>
+                        </div>
+                    </div>
+
+                    <div class="messages-area" id="messages-area">
+                        <div class="empty-state">
+                            <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.3;"></i>
+                            <p>Selecione um contato ao lado para conversar.</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area hidden-view" id="chat-input-area">
+                        <input type="text" class="chat-input" id="message-input" placeholder="Digite sua mensagem...">
+                        <button class="send-btn" id="send-msg-btn">ENVIAR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GRIDS DE VAGAS RESTANTES -->
+    <section id="companies-page" class="page-content hidden">
+        <div class="feed-container">
+            <h2 class="section-title" id="companies-title">Vagas <span class="wine-text">Abertas</span></h2>
+            <div class="grid-layout" id="companies-grid"></div>
+        </div>
+    </section>
+
+    <section id="employees-page" class="page-content hidden">
+        <div class="feed-container">
+            <h2 class="section-title" id="employees-title">Talentos <span class="wine-text">Disponíveis</span></h2>
+            <div class="grid-layout" id="employees-grid"></div>
+        </div>
+    </section>
+
+    <!-- FORMS CRIACAO DE EMPREGADOR / CANDIDATO -->
+    <section id="employer-form-page" class="page-content hidden">
+        <div class="form-card">
+            <h3>Nova Vaga</h3>
+            <form id="form-company">
+                <div class="input-group">
+                    <label>Logo da Empresa (Foto)</label>
+                    <input type="file" id="comp-photo" accept="image/*" class="file-input">
+                </div>
+                <div class="input-group">
+                    <label>Nome da Empresa</label>
+                    <input type="text" id="comp-name" required placeholder="Ex: Hax Tech">
+                </div>
+                <div class="input-group">
+                    <label>Área de Atuação / Ramo (Opcional)</label>
+                    <input type="text" id="comp-industry" placeholder="Ex: Construção Civil, Tecnologia, Comércio...">
+                </div>
+                <div class="input-group select-group">
+                    <label>Tamanho (Porte da Empresa)</label>
+                    <select id="comp-size">
+                        <option value="Pequena">Pequena (1 a 49 pessoas)</option>
+                        <option value="Média">Média (50 a 249 pessoas)</option>
+                        <option value="Grande">Grande (250+ pessoas)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Contato RH / WhatsApp Corporativo (Opcional)</label>
+                    <input type="text" id="comp-phone" placeholder="(XX) XXXXX-XXXX">
+                </div>
+                <hr style="border: 2px solid var(--blood-wine); margin: 30px 0;">
+                <div class="input-group">
+                    <label>Cargo da Vaga (Área)</label>
+                    <input type="text" id="comp-role" required placeholder="Ex: Desenvolvedor Senior">
+                </div>
+                <div class="input-group select-group">
+                    <label>Localização</label>
+                    <select id="comp-location" required>
+                        <option value="" disabled selected>Selecione um formato...</option>
+                        <option value="Remoto">Trabalho de Casa (Remoto)</option>
+                        <option value="Híbrido">Misto (Híbrido)</option>
+                        <option value="Presencial">No Local (Presencial)</option>
+                    </select>
+                </div>
+                <div class="input-group select-group">
+                    <label>Tipo de Contrato</label>
+                    <select id="comp-type" required>
+                        <option value="" disabled selected>Selecione uma espécie de contrato...</option>
+                        <option value="CLT">Carteira Assinada (CLT)</option>
+                        <option value="PJ">Freelancer/PJ</option>
+                        <option value="Estágio">Estágio</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Pagamento / Salário</label>
+                    <input type="text" id="comp-salary" placeholder="Ex: R$ 2.000 por mês">
+                </div>
+                <div class="input-group">
+                    <label>O que a pessoa precisa saber fazer?</label>
+                    <textarea id="comp-desc" rows="3" required placeholder="Escreva aqui as habilidades necessárias..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Horário de Trabalho</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="comp-work-start" placeholder="Início (Ex: 08:00)" style="flex:1;">
+                        <input type="text" id="comp-work-lunch" placeholder="Almoço (Ex: 1h)" style="flex:1;">
+                        <input type="text" id="comp-work-end" placeholder="Fim (Ex: 17:00)" style="flex:1;">
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn" id="employer-btn-submit">CRIAR PERFIL DA EMPRESA</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="candidate-form-page" class="page-content hidden">
+        <div class="form-card">
+            <h3>Seu Perfil</h3>
+            <form id="form-candidate">
+                <div class="input-group">
+                    <label>Sua Foto</label>
+                    <input type="file" id="cand-photo" accept="image/*" class="file-input">
+                </div>
+                <!-- Arquivos omitidos devido a lógica simplificada na web temporária -->
+                <div class="input-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="cand-name" required>
+                </div>
+                <div class="input-group" style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <label>Sua Idade</label>
+                        <input type="number" id="cand-age" required placeholder="Ex: 25">
+                    </div>
+                    <div style="flex:2;">
+                        <label>Sua Localização / Cidade</label>
+                        <input type="text" id="cand-location" required placeholder="Ex: São Paulo - SP">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Telefone / WhatsApp Profissional</label>
+                    <input type="text" id="cand-phone" required placeholder="(XX) XXXXX-XXXX">
+                </div>
+                <div class="input-group select-group">
+                    <label>Formação Base (Escolaridade)</label>
+                    <select id="cand-education" required>
+                        <option value="" disabled selected>Escolha sua formação atual...</option>
+                        <option value="Ensino Fundamental">Ensino Fundamental</option>
+                        <option value="Ensino Médio">Ensino Médio</option>
+                        <option value="Técnico/Profissionalizante">Técnico/Profissionalizante</option>
+                        <option value="Ensino Superior">Ensino Superior / Especialização</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Com o que você trabalha? (Cargo Principal)</label>
+                    <input type="text" id="cand-role" required placeholder="Ex: Pedreiro, Vendedor, Programador...">
+                </div>
+                <div class="input-group">
+                    <label>Quanto tempo de experiência?</label>
+                    <input type="text" id="cand-exp" required placeholder="Ex: 5 anos">
+                </div>
+                <div class="input-group">
+                    <label>Sua principal habilidade</label>
+                    <input type="text" id="cand-skill" required placeholder="Ex: Levantar muro, Vender bem...">
+                </div>
+                <div class="input-group">
+                    <label>Anexar Documento / Arquivo de Trabalho (Máx 800KB)</label>
+                    <input type="file" id="cand-file" accept=".pdf,.doc,.docx,image/*" class="file-input">
+                </div>
+                <button type="submit" class="submit-btn" id="candidate-btn-submit">CADASTRAR MEU PERFIL</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="profile-page" class="page-content hidden">
+        <div class="feed-container text-center">
+            <h2 class="section-title">Perfil do <span class="wine-text">Usuário</span></h2>
+            
+            <div id="view-profile-card" class="form-card text-center" style="max-width: 800px; margin: 0 auto; display:none; padding: 50px;">
+                <div class="profile-pic-container mb-20" style="margin-bottom: 35px;">
+                    <img src="criadores/default.jpg" id="view-profile-pic" class="employee-photo" style="width: 200px; height: 200px; object-fit: cover; border: 5px solid var(--blood-wine); box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
+                </div>
+
+                <h3 id="view-profile-name" style="font-size: 2.2rem; margin-bottom: 5px; text-transform:uppercase;">Carregando...</h3>
+                <h5 id="view-profile-role" style="font-size: 1.3rem; color: var(--blood-wine); margin-bottom: 40px; font-weight:700;">-</h5>
+
+                <div id="view-profile-details" class="text-left" style="background: var(--gray-dark); padding: 30px; border-radius: 12px; margin-bottom: 40px; font-size: 1.05rem; color: #ddd; line-height: 1.9; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);">
+                    <!-- Preenchido via Javascript -->
+                </div>
+
+                <div style="display:flex; gap:15px;">
+                    <button type="button" class="submit-btn outline" id="view-profile-edit-btn" style="flex:1; display:none; background:transparent; border:2px solid var(--blood-wine); color:white;"><i class="fas fa-edit"></i> EDITAR PERFIL</button>
+                    <button type="button" class="submit-btn" id="view-profile-msg-btn" style="flex:1;"><i class="fas fa-comment-dots"></i> ENVIAR MENSAGEM</button>
+                </div>
+            </div>
+            
+            <p id="view-profile-loading" style="color:var(--gray-medium);">Buscando informações no banco de dados...</p>
+        </div>
+    </section>
+
+    <!-- EDIÇÃO DE PERFIL -->
+    <section id="edit-profile-page" class="page-content hidden">
+        <div class="form-card">
+            <h3>Editar Perfil</h3>
+            <form id="form-edit-common">
+                <div class="input-group">
+                    <label>Trocar Foto</label>
+                    <input type="file" id="edit-photo" accept="image/*" class="file-input">
+                </div>
+                <div class="input-group"><label>Nome Principal</label><input type="text" id="edit-name" required></div>
+                
+                <!-- CONTAINER CAMPOS DINÂMICOS -->
+                <div id="edit-dynamic-fields"></div>
+                
+                <button type="submit" class="submit-btn" id="edit-btn-submit">SALVAR ALTERAÇÕES</button>
+            </form>
+            
+            <div id="employer-jobs-manager" style="display:none; margin-top:40px; border-top: 1px solid #444; padding-top:20px;">
+                <h3>Gerenciar Vagas</h3>
+                <div id="jobs-list" style="margin-bottom:20px;"></div>
+                <button type="button" class="submit-btn outline" onclick="window.location.hash='#add-job'" style="width:100%; background:transparent; border:2px dashed var(--blood-wine); color:var(--blood-wine);">+ ADICIONAR NOVA VAGA</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADICIONAR VAGA -->
+    <section id="add-job-page" class="page-content hidden">
+        <div class="form-card">
+            <h3>Publicar Nova Vaga</h3>
+            <form id="form-add-job">
+                <div class="input-group">
+                    <label>Cargo da Vaga (Área)</label>
+                    <input type="text" id="new-job-role" required placeholder="Ex: Desenvolvedor Senior">
+                </div>
+                <div class="input-group">
+                    <label>Pagamento / Salário</label>
+                    <input type="text" id="new-job-salary" required placeholder="Ex: R$ 2.000 por mês">
+                </div>
+                <div class="input-group select-group">
+                    <label>Tipo de Contrato</label>
+                    <select id="new-job-type" required>
+                        <option value="CLT">CLT</option>
+                        <option value="PJ">PJ</option>
+                        <option value="Estágio">Estágio</option>
+                        <option value="Temporário">Temporário</option>
+                    </select>
+                </div>
+                <div class="input-group select-group">
+                    <label>Localização</label>
+                    <select id="new-job-location" required>
+                        <option value="Remoto">Trabalho de Casa (Remoto)</option>
+                        <option value="Híbrido">Misto (Híbrido)</option>
+                        <option value="Presencial">No Local (Presencial)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>O que a pessoa precisa saber fazer?</label>
+                    <textarea id="new-job-desc" rows="4" required placeholder="Escreva aqui as habilidades necessárias..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Horário de Trabalho</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="new-job-work-start" placeholder="Início (Ex: 08:00)" style="flex:1;">
+                        <input type="text" id="new-job-work-lunch" placeholder="Almoço (Ex: 1h)" style="flex:1;">
+                        <input type="text" id="new-job-work-end" placeholder="Fim (Ex: 17:00)" style="flex:1;">
+                    </div>
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="button" class="submit-btn outline" onclick="window.goBack()" style="flex:1; background:transparent; border: 2px solid #555; color: white;">CANCELAR</button>
+                    <button type="submit" class="submit-btn" id="btn-submit-new-job" style="flex:2;">PUBLICAR VAGA</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- EDITAR VAGA -->
+    <section id="edit-job-page" class="page-content hidden">
+        <div class="form-card">
+            <h3>Editar Vaga</h3>
+            <form id="form-edit-job">
+                <input type="hidden" id="edit-job-id">
+                <div class="input-group">
+                    <label>Cargo da Vaga (Área)</label>
+                    <input type="text" id="edit-job-role" required placeholder="Ex: Desenvolvedor Senior">
+                </div>
+                <div class="input-group">
+                    <label>Pagamento / Salário</label>
+                    <input type="text" id="edit-job-salary" required placeholder="Ex: R$ 2.000 por mês">
+                </div>
+                <div class="input-group select-group">
+                    <label>Tipo de Contrato</label>
+                    <select id="edit-job-type" required>
+                        <option value="CLT">CLT</option>
+                        <option value="PJ">PJ</option>
+                        <option value="Estágio">Estágio</option>
+                        <option value="Temporário">Temporário</option>
+                    </select>
+                </div>
+                <div class="input-group select-group">
+                    <label>Localização</label>
+                    <select id="edit-job-location" required>
+                        <option value="Remoto">Trabalho de Casa (Remoto)</option>
+                        <option value="Híbrido">Misto (Híbrido)</option>
+                        <option value="Presencial">No Local (Presencial)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>O que a pessoa precisa saber fazer?</label>
+                    <textarea id="edit-job-desc" rows="4" required placeholder="Escreva aqui as habilidades necessárias..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Horário de Trabalho</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="edit-job-work-start" placeholder="Início (Ex: 08:00)" style="flex:1;">
+                        <input type="text" id="edit-job-work-lunch" placeholder="Almoço (Ex: 1h)" style="flex:1;">
+                        <input type="text" id="edit-job-work-end" placeholder="Fim (Ex: 17:00)" style="flex:1;">
+                    </div>
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="button" class="submit-btn outline" onclick="window.goBack()" style="flex:1; background:transparent; border: 2px solid #555; color: white;">CANCELAR</button>
+                    <button type="submit" class="submit-btn" id="btn-submit-edit-job" style="flex:2;">SALVAR VAGA</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- GERADOR DE CURRÍCULO -->
+    <section id="resume-page" class="page-content hidden" style="padding-top: 100px;">
+        <div class="resume-container">
+            <h2 class="section-title">Gerador de <span class="wine-text">Currículo</span></h2>
+            
+            <div class="resume-grid" style="display:flex; gap:30px; align-items:flex-start;">
+                <!-- COLUNA DA ESQUERDA: FORMULÁRIO -->
+                <div class="resume-editor form-card" style="margin: 0; flex:1; max-height:80vh; overflow-y:auto; border-top: none;">
+                    <h3>1. Preencha seus Dados</h3>
+                    <form id="form-resume-builder">
+                        <div class="input-group"><label>Adicionar Foto (Opcional)</label><input type="file" id="cv-photo-input" accept="image/*" class="file-input"></div>
+                        <div class="input-group"><label>Nome Completo</label><input type="text" id="cv-name" placeholder="Seu Nome"></div>
+                        <div class="input-group"><label>Sua Profissão Principal / Título</label><input type="text" id="cv-title" placeholder="Ex: Programador, Técnico em Mnt."></div>
+                        <div class="input-group"><label>E-mail</label><input type="email" id="cv-email" placeholder="seuemail@exemplo.com"></div>
+                        <div class="input-group"><label>Telefone / WhatsApp</label><input type="text" id="cv-phone" placeholder="(XX) XXXXX-XXXX"></div>
+                        <div class="input-group"><label>Anexar Portfólio / Documento Complementar</label><input type="file" id="cv-file" accept=".pdf,.doc,.docx,image/*" class="file-input"></div>
+                        <div class="input-group"><label>Resumo Profissional / Quem sou eu?</label><textarea id="cv-summary" rows="3" placeholder="Fale um pouco sobre o que você busca e o que gosta de fazer..."></textarea></div>
+                        <div class="input-group"><label>Habilidades (separadas por vírgula)</label><input type="text" id="cv-skills" placeholder="Ex: Excel, Facilidade de fala, Empatia"></div>
+                        <div class="input-group"><label>Idiomas</label><input type="text" id="cv-languages" placeholder="Ex: Inglês Básico, Espanhol Fluente..."></div>
+                        <div class="input-group"><label>Cursos Extras / Certificados</label><input type="text" id="cv-courses" placeholder="Ex: Curso de Vendas (Senai), Informática..."></div>
+                        
+                        <h4 style="margin: 20px 0 10px; color: var(--blood-wine); text-transform:uppercase; font-size:1rem;">Experiência Principal</h4>
+                        <div class="input-group"><label>Cargo ou Função</label><input type="text" id="cv-exp-role"></div>
+                        <div class="input-group"><label>Onde trabalhou? (Empresa)</label><input type="text" id="cv-exp-company"></div>
+                        <div class="input-group"><label>Período (Ex: 2020 - 2022)</label><input type="text" id="cv-exp-time"></div>
+                        
+                        <h4 style="margin: 20px 0 10px; color: var(--blood-wine); text-transform:uppercase; font-size:1rem;">Outra Experiência (Opcional)</h4>
+                        <div class="input-group"><label>Cargo ou Função</label><input type="text" id="cv-exp2-role"></div>
+                        <div class="input-group"><label>Empresa</label><input type="text" id="cv-exp2-company"></div>
+                        <div class="input-group"><label>Período</label><input type="text" id="cv-exp2-time"></div>
+                        
+                        <h4 style="margin: 20px 0 10px; color: var(--blood-wine); text-transform:uppercase; font-size:1rem;">Escolaridade / Formação</h4>
+                        <div class="input-group"><label>Curso / Grau</label><input type="text" id="cv-edu-course" placeholder="Ex: Ensino Médio Completo"></div>
+                        <div class="input-group"><label>Instituição</label><input type="text" id="cv-edu-school"></div>
+                        
+                        <div class="cv-actions" style="margin-top:30px;">
+                            <button type="button" class="submit-btn" id="btn-download-pdf" style="width: 100%; margin-top:0; background-color: var(--blood-wine);">BAIXAR EM PDF <i class="fas fa-file-pdf"></i></button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- COLUNA DA DIREITA: PAPEL A4 -->
+                <div class="resume-preview-wrapper" style="flex:1; position:sticky; top:120px; display:flex; justify-content:center; align-items:flex-start;">
+                    <div class="a4-paper" id="a4-resume-content">
+                        <!-- HEADER -->
+                        <div class="cv-header" style="display:flex; align-items:center; gap:20px;">
+                            <div class="cv-photo-area">
+                                <img id="render-cv-photo" src="" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid var(--blood-wine); display:none;">
+                            </div>
+                            <div style="flex:1;">
+                                <h1 id="render-cv-name">Seu Nome Aqui</h1>
+                                <h2 id="render-cv-title">Sua Profissão</h2>
+                                <div class="cv-contact">
+                                    <span id="render-cv-email">email@exemplo.com</span> | <span id="render-cv-phone">(00) 00000-0000</span>
+                                </div>
+                                <div id="cv-section-links" class="cv-contact" style="display:none; color: var(--blood-wine); margin-top:2px;">
+                                    <i class="fas fa-link"></i> <a id="render-cv-links" target="_blank" style="color: var(--blood-wine); text-decoration: underline;"></a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- CORPO -->
+                        <div class="cv-body">
+                            <div class="cv-section">
+                                <h3 class="cv-section-title">Resumo Profissional</h3>
+                                <p id="render-cv-summary" class="cv-text">Seu texto de resumo aparecerá aqui e ganhará corpo.</p>
+                            </div>
+                            
+                            <div class="cv-section">
+                                <h3 class="cv-section-title">Experiência</h3>
+                                <div class="cv-job">
+                                    <div class="cv-job-header">
+                                        <b id="render-cv-exp-role">Seu Cargo</b>
+                                        <span id="render-cv-exp-time" class="cv-date">Período</span>
+                                    </div>
+                                    <div id="render-cv-exp-company" class="cv-company">Nome da Empresa</div>
+                                </div>
+                                <div class="cv-job" id="cv-section-exp2" style="display:none; margin-top:15px;">
+                                    <div class="cv-job-header">
+                                        <b id="render-cv-exp2-role">Outro Cargo</b>
+                                        <span id="render-cv-exp2-time" class="cv-date">Período</span>
+                                    </div>
+                                    <div id="render-cv-exp2-company" class="cv-company">Outra Empresa</div>
+                                </div>
+                            </div>
+                            
+                            <div class="cv-section">
+                                <h3 class="cv-section-title">Educação e Formação</h3>
+                                <div class="cv-job">
+                                    <div class="cv-job-header">
+                                        <b id="render-cv-edu-course">Curso Acadêmico</b>
+                                    </div>
+                                    <div id="render-cv-edu-school" class="cv-company">Nome da Instituição</div>
+                                </div>
+                                <div class="cv-job" id="cv-section-courses" style="display:none; margin-top:10px;">
+                                    <b style="font-size:0.95rem;">Cursos Complementares:</b>
+                                    <div id="render-cv-courses" class="cv-company" style="margin-top:5px;"></div>
+                                </div>
+                            </div>
+
+                            <div class="cv-section">
+                                <h3 class="cv-section-title">Habilidades e Idiomas</h3>
+                                <div id="render-cv-skills" class="cv-skills-list" style="margin-bottom:15px;">
+                                    <span class="cv-skill-item">Habilidade 1</span>
+                                    <span class="cv-skill-item">Habilidade 2</span>
+                                </div>
+                                <div id="cv-section-languages" style="display:none; font-size:0.95rem;">
+                                    <b>Idiomas:</b> <span id="render-cv-languages"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="partners-bar">
+        <h6 class="partners-title">Empresas Parceiras</h6>
+        <div class="partners-marquee">
+            <div class="partners-track">
+                <div class="partner-logo" aria-label="Nexora">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="4,8 28,8 16,28"/><line x1="10" y1="16" x2="22" y2="16"/></svg>
+                    <span>Nexora</span>
+                </div>
+                <div class="partner-logo" aria-label="Vantrix">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="16,3 28,10 28,22 16,29 4,22 4,10"/><circle cx="16" cy="16" r="2" fill="currentColor" stroke="none"/></svg>
+                    <span>Vantrix</span>
+                </div>
+                <div class="partner-logo" aria-label="Hallivo">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="13"/><circle cx="16" cy="16" r="8"/><circle cx="16" cy="16" r="3"/></svg>
+                    <span>Hallivo</span>
+                </div>
+                <div class="partner-logo" aria-label="Zentra">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="9" y="9" width="14" height="14" transform="rotate(45 16 16)"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg>
+                    <span>Zentra</span>
+                </div>
+                <div class="partner-logo" aria-label="Fenix Corp">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="27" y2="27"/><line x1="27" y1="5" x2="5" y2="27"/><circle cx="16" cy="16" r="4"/></svg>
+                    <span>Fenix Corp</span>
+                </div>
+                <div class="partner-logo" aria-label="Aurelio">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="16,3 19,13 29,16 19,19 16,29 13,19 3,16 13,13"/></svg>
+                    <span>Aurelio</span>
+                </div>
+                <div class="partner-logo" aria-label="Omniplex">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><polyline points="4,27 4,6 16,20 28,6 28,27"/></svg>
+                    <span>Omniplex</span>
+                </div>
+                <div class="partner-logo" aria-label="Kairos">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M26 16a10 10 0 1 1 -6 -9.2"/><line x1="20" y1="3" x2="20" y2="10"/><line x1="20" y1="10" x2="27" y2="10"/></svg>
+                    <span>Kairos</span>
+                </div>
+                <div class="partner-logo" aria-label="Dynamo">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="16,4 28,26 4,26"/><line x1="16" y1="4" x2="16" y2="26"/></svg>
+                    <span>Dynamo</span>
+                </div>
+                <div class="partner-logo" aria-label="Vertex">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="22" height="22"/><line x1="5" y1="5" x2="27" y2="27"/><line x1="27" y1="5" x2="5" y2="27"/></svg>
+                    <span>Vertex</span>
+                </div>
+
+                <div class="partner-logo" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="4,8 28,8 16,28"/><line x1="10" y1="16" x2="22" y2="16"/></svg>
+                    <span>Nexora</span>
+                </div>
+                <div class="partner-logo" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="16,3 28,10 28,22 16,29 4,22 4,10"/><circle cx="16" cy="16" r="2" fill="currentColor" stroke="none"/></svg>
+                    <span>Vantrix</span>
+                </div>
+                <div class="partner-logo" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="13"/><circle cx="16" cy="16" r="8"/><circle cx="16" cy="16" r="3"/></svg>
+                    <span>Hallivo</span>
+                </div>
+                <div class="partner-logo" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="9" y="9" width="14" height="14" transform="rotate(45 16 16)"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg>
+                    <span>Zentra</span>
+                </div>
+                <div class="partner-logo" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="27" y2="27"/><line x1="27" y1="5" x2="5" y2="27"/><circle cx="16" cy="16" r="4"/></svg>
+                    <span>Fenix Corp</span>
+                </div>
+                <div class="partner-logo" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="16,3 19,13 29,16 19,19 16,29 13,19 3,16 13,13"/></svg>
+                    <span>Aurelio</span>
+                </div>
+                <div class="partner-logo" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><polyline points="4,27 4,6 16,20 28,6 28,27"/></svg>
+                    <span>Omniplex</span>
+                </div>
+                <div class="partner-logo" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M26 16a10 10 0 1 1 -6 -9.2"/><line x1="20" y1="3" x2="20" y2="10"/><line x1="20" y1="10" x2="27" y2="10"/></svg>
+                    <span>Kairos</span>
+                </div>
+                <div class="partner-logo" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="16,4 28,26 4,26"/><line x1="16" y1="4" x2="16" y2="26"/></svg>
+                    <span>Dynamo</span>
+                </div>
+                <div class="partner-logo" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="22" height="22"/><line x1="5" y1="5" x2="27" y2="27"/><line x1="27" y1="5" x2="5" y2="27"/></svg>
+                    <span>Vertex</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NOTIFICAÇÃO PERSONALIZADA HAX -->
+    <div id="hax-notify-overlay" class="hax-notify-overlay" role="dialog" aria-modal="true" aria-labelledby="hax-notify-title" style="display:none;">
+        <div class="hax-notify-card" id="hax-notify-card">
+            <button class="hax-notify-close" type="button" aria-label="Fechar notificação">&times;</button>
+            <div class="hax-notify-icon"><i class="fas fa-check-circle" id="hax-notify-icon"></i></div>
+            <h3 class="hax-notify-title" id="hax-notify-title">Sucesso!</h3>
+            <p class="hax-notify-message" id="hax-notify-message">Mensagem</p>
+            <button class="hax-notify-ok" type="button" id="hax-notify-ok">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de notificação Hax (substitui alert())
+        (function() {
+            const overlay = document.getElementById('hax-notify-overlay');
+            const card = document.getElementById('hax-notify-card');
+            const iconEl = document.getElementById('hax-notify-icon');
+            const titleEl = document.getElementById('hax-notify-title');
+            const msgEl = document.getElementById('hax-notify-message');
+            const closeBtn = overlay.querySelector('.hax-notify-close');
+            const okBtn = document.getElementById('hax-notify-ok');
+
+            function hide() {
+                overlay.classList.remove('show');
+                setTimeout(() => { overlay.style.display = 'none'; }, 200);
+            }
+
+            window.showToast = function(message, type) {
+                type = type || 'success';
+                card.classList.remove('error', 'info', 'success');
+                card.classList.add(type);
+                if (type === 'error') {
+                    iconEl.className = 'fas fa-exclamation-triangle';
+                    titleEl.textContent = 'Atenção!';
+                } else if (type === 'info') {
+                    iconEl.className = 'fas fa-info-circle';
+                    titleEl.textContent = 'Aviso';
+                } else {
+                    iconEl.className = 'fas fa-check-circle';
+                    titleEl.textContent = 'Sucesso!';
+                }
+                msgEl.textContent = message;
+                overlay.style.display = 'flex';
+                requestAnimationFrame(() => overlay.classList.add('show'));
+            };
+
+            closeBtn.addEventListener('click', hide);
+            okBtn.addEventListener('click', hide);
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) hide();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && overlay.classList.contains('show')) hide();
+            });
+        })();
+    </script>
+
+    <script>
+        // Toggle de tema claro/escuro
+        (function() {
+            const btn = document.getElementById('theme-toggle');
+            const icon = document.getElementById('theme-toggle-icon');
+            if (!btn || !icon) return;
+
+            function updateIcon() {
+                const isLight = document.documentElement.classList.contains('light-mode');
+                icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+                btn.setAttribute('title', isLight ? 'Mudar para modo escuro' : 'Mudar para modo claro');
+            }
+            updateIcon();
+
+            btn.addEventListener('click', function() {
+                document.documentElement.classList.toggle('light-mode');
+                const isLight = document.documentElement.classList.contains('light-mode');
+                try { localStorage.setItem('hax-theme', isLight ? 'light' : 'dark'); } catch (e) {}
+                updateIcon();
+            });
+        })();
+    </script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
