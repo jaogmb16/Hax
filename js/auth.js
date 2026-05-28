@@ -129,12 +129,14 @@ export async function registerUser(email, password, profileData, type) {
                 location: profileData.location,
                 type: profileData.type,
                 salary: profileData.salary,
-                desc: profileData.desc,
+                desc: profileData.jobDesc || '',
                 workStart: profileData.workStart || '',
                 workLunch: profileData.workLunch || '',
                 workEnd: profileData.workEnd || '',
                 status: 'open'
             }];
+            // jobDesc pertence à vaga (jobs[]), não é coluna da empresa
+            delete insertData.jobDesc;
         }
 
         const { error: insertError } = await supabase

@@ -80,11 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 industry: document.getElementById('comp-industry').value || '',
                 size: document.getElementById('comp-size').value || '',
                 phone: document.getElementById('comp-phone').value || '',
+                desc: document.getElementById('comp-about').value || '',
                 role: document.getElementById('comp-role').value,
                 location: document.getElementById('comp-location').value,
                 type: document.getElementById('comp-type').value,
                 salary: document.getElementById('comp-salary').value,
-                desc: document.getElementById('comp-desc').value,
+                jobDesc: document.getElementById('comp-desc').value,
                 workStart: document.getElementById('comp-work-start').value || '',
                 workLunch: document.getElementById('comp-work-lunch').value || '',
                 workEnd: document.getElementById('comp-work-end').value || ''
