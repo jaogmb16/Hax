@@ -1,0 +1,55 @@
+# ===========================================
+# .gitignore — Site HTML/CSS/JS puro + Supabase
+# ===========================================
+
+# --- Sistema Operacional ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- Editores / IDEs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# --- Variáveis de ambiente / segredos ---
+# (úteis caso você passe a usar um servidor ou bundler no futuro)
+.env
+.env.local
+.env.*.local
+*.pem
+secrets.json
+
+# --- Logs ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+
+# --- Dependências (caso você passe a usar npm depois) ---
+node_modules/
+
+# --- Build / Cache (caso adicione Vite, Parcel, etc.) ---
+dist/
+build/
+.cache/
+.parcel-cache/
+.vite/
+
+# --- Arquivos temporários ---
+*.tmp
+*.temp
+*.bak
+
+# --- Currículos gerados em PDF (descomente se eles forem salvos na pasta do projeto) ---
+# Curriculo_*.pdf
