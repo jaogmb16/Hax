@@ -4,12 +4,14 @@ import { currentAuthUser, currentUserDoc } from './auth.js';
 
 let currentChatId = null;
 let currentContactName = "";
+let currentContactUid = null;
 let chatSubscription = null;
 let messagesSubscription = null;
 
 export function clearActiveChat() {
     currentChatId = null;
     currentContactName = "";
+    currentContactUid = null;
     if (messagesSubscription) {
         supabase.removeChannel(messagesSubscription);
         messagesSubscription = null;
@@ -197,6 +199,7 @@ export function openChat(contactUid, contactName) {
     if (!currentAuthUser) return;
 
     currentContactName = contactName;
+    currentContactUid = contactUid;
     currentChatId = [currentAuthUser.id, contactUid].sort().join("_");
 
     const sidebar = document.getElementById('chat-sidebar');
@@ -287,3 +290,9 @@ function addBubble(text, type) {
     area.appendChild(div);
     area.scrollTop = area.scrollHeight;
 }
+
+window.viewCurrentChatUserProfile = () => {
+    if (currentContactUid) {
+        window.viewUserProfile(currentContactUid);
+    }
+};

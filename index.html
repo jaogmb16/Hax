@@ -28,6 +28,23 @@
 </head>
 <body>
 
+    <!-- MODAL DE ACEITE DOS TERMOS DE SERVIÇO -->
+    <div id="hax-terms-overlay" class="hax-terms-overlay" role="dialog" aria-modal="true" aria-labelledby="hax-terms-title" style="display:none;">
+        <div class="hax-terms-card" id="hax-terms-card">
+            <div class="hax-terms-icon"><i class="fas fa-file-signature"></i></div>
+            <h3 class="hax-terms-title" id="hax-terms-title">Bem-vindo à <span class="wine-text">HAX Empregos</span></h3>
+            <p class="hax-terms-message">
+                Antes de continuar, precisamos do seu aceite. Ao usar a plataforma, você concorda com os nossos
+                Termos de Serviço e com o armazenamento dos seus dados para o funcionamento do site.
+            </p>
+            <div id="hax-terms-more" class="hax-terms-more hidden">
+                Ao aceitar, você concorda que a HAX armazene as informações que você fornecer (nome, e-mail, telefone, localização, foto, currículo e demais dados do perfil) com o único propósito de permitir o funcionamento da plataforma — incluindo exibir seu perfil para empresas/candidatos, possibilitar conversas no chat e mostrar vagas compatíveis. Seus dados não serão vendidos a terceiros. Você pode solicitar a exclusão da sua conta a qualquer momento, o que removerá suas informações da nossa base.
+            </div>
+            <a href="#" id="hax-terms-toggle" class="hax-terms-link">Ler os termos completos</a>
+            <button class="hax-terms-accept" type="button" id="hax-terms-accept">ACEITAR E CONTINUAR</button>
+        </div>
+    </div>
+
     <div class="nav-actions-container">
         <a href="javascript:void(0)" onclick="window.goBack()" id="back-btn" class="back-btn hidden">&larr; VOLTAR</a>
     </div>
@@ -297,6 +314,9 @@
                             <span class="back-to-list" onclick="window.toggleChatList()">&#8592;</span>
                             <span id="chat-title-name">Nome do Contato</span>
                         </div>
+                        <button id="chat-profile-btn" onclick="window.viewCurrentChatUserProfile()" class="chat-profile-button">
+                            <i class="fas fa-user"></i> Ver Perfil
+                        </button>
                     </div>
 
                     <div class="messages-area" id="messages-area">
@@ -903,6 +923,39 @@
             });
         })();
     </script>
+    <script>
+        // Modal de aceite dos Termos de Serviço (primeira visita)
+        (function() {
+            const overlay = document.getElementById('hax-terms-overlay');
+            const acceptBtn = document.getElementById('hax-terms-accept');
+            const toggleLink = document.getElementById('hax-terms-toggle');
+            const moreBox = document.getElementById('hax-terms-more');
+            if (!overlay || !acceptBtn) return;
+
+            let accepted = false;
+            try { accepted = sessionStorage.getItem('hax-terms-accepted') === 'true'; } catch (e) {}
+
+            if (!accepted) {
+                overlay.style.display = 'flex';
+                requestAnimationFrame(() => overlay.classList.add('show'));
+            }
+
+            if (toggleLink && moreBox) {
+                toggleLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const isHidden = moreBox.classList.toggle('hidden');
+                    toggleLink.textContent = isHidden ? 'Ler os termos completos' : 'Ocultar os termos';
+                });
+            }
+
+            acceptBtn.addEventListener('click', function() {
+                try { sessionStorage.setItem('hax-terms-accepted', 'true'); } catch (e) {}
+                overlay.classList.remove('show');
+                setTimeout(() => { overlay.style.display = 'none'; }, 200);
+            });
+        })();
+    </script>
+
     <script type="module" src="js/main.js"></script>
 </body>
 </html>

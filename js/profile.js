@@ -2,6 +2,17 @@
 import { supabase } from './supabase.js';
 import { currentAuthUser, currentUserDoc } from './auth.js';
 
+// Converte o telefone cadastrado em um link direto do WhatsApp (https://wa.me/<numero>).
+// Retorna '' se não houver dígitos válidos (nesse caso o botão não é exibido).
+function buildWhatsappLink(phone) {
+    if (!phone) return '';
+    let digits = String(phone).replace(/\D/g, '');
+    if (!digits) return '';
+    // Número brasileiro sem código do país (10 ou 11 dígitos) -> prefixa 55.
+    if (digits.length <= 11) digits = '55' + digits;
+    return 'https://wa.me/' + digits;
+}
+
 export async function uploadImage(file, path) {
     return new Promise((resolve) => {
         if (!file) { resolve(null); return; }
@@ -148,6 +159,9 @@ export async function loadUserProfile(uid) {
                 <div style="margin-bottom: 25px;">
                     <h4 style="color:var(--blood-wine); margin-bottom: 5px; font-size:1.1rem;">📞 Contato RH/Empresa</h4>
                     <p style="margin:0; font-size:1.15rem;">${userData.phone}</p>
+                    <a href="${buildWhatsappLink(userData.phone)}" target="_blank" rel="noopener" class="whatsapp-btn" style="margin-top:15px;">
+                        <i class="fab fa-whatsapp"></i> Chamar no WhatsApp
+                    </a>
                 </div>` : ''}
                 <div style="margin-bottom: 25px;">
                     <h4 style="color:var(--blood-wine); margin-bottom: 5px; font-size:1.1rem;">📝 Sobre a Empresa</h4>
@@ -183,6 +197,9 @@ export async function loadUserProfile(uid) {
                 <div style="margin-bottom: 25px;">
                     <h4 style="color:var(--blood-wine); margin-bottom: 5px; font-size:1.1rem;">📞 Contato Profissional</h4>
                     <p style="margin:0; font-size:1.15rem;">${userData.phone}</p>
+                    <a href="${buildWhatsappLink(userData.phone)}" target="_blank" rel="noopener" class="whatsapp-btn" style="margin-top:15px;">
+                        <i class="fab fa-whatsapp"></i> Chamar no WhatsApp
+                    </a>
                 </div>` : ''}
                 ${userData.file ? `
                 <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid #444; text-align:center;">
